@@ -1,4 +1,8 @@
-# Northcoders News API
+# Northcoders MD News API
+
+## What's this all about?
+
+This is a backend CRUD API that serves data in a Reddit-style format.
 
 ## Install Instructions
 
