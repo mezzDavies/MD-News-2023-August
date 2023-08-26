@@ -3,21 +3,23 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testdata = require("../db/data/test-data");
-// run seed - before each
+const endpointsFile = require("../endpoints.json");
+
 beforeEach(() => {
   return seed(testdata);
 });
+
 afterAll(() => {
   return db.end();
 });
-// generic 404 test
+
 describe("STATUS:404 returns appropriate message for invalid urls", () => {
   test("GET", () => {
     return request(app)
       .get("/api/invalid-url")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("invalid url");
+        expect(msg).toBe("oops! invalid url");
       });
   });
   test("POST", () => {
@@ -25,7 +27,7 @@ describe("STATUS:404 returns appropriate message for invalid urls", () => {
       .post("/api/invalid-url")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("invalid url");
+        expect(msg).toBe("oops! invalid url");
       });
   });
   test("PATCH", () => {
@@ -33,7 +35,7 @@ describe("STATUS:404 returns appropriate message for invalid urls", () => {
       .patch("/api/invalid-url")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("invalid url");
+        expect(msg).toBe("oops! invalid url");
       });
   });
   test("DELETE", () => {
@@ -41,7 +43,7 @@ describe("STATUS:404 returns appropriate message for invalid urls", () => {
       .delete("/api/invalid-url")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("invalid url");
+        expect(msg).toBe("oops! invalid url");
       });
   });
 });
@@ -60,6 +62,16 @@ describe("GET /api/topics ", () => {
             })
           );
         });
+      });
+  });
+});
+describe("GET /api", () => {
+  test("STATUS: 200 returns endpoints.json file", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(endpointsFile);
       });
   });
 });
