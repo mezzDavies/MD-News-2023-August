@@ -76,31 +76,6 @@ describe("GET /api", () => {
   });
 });
 
-/* 
-
-/api/articles/article-id
-Remember to add a description of this endpoint to your /api endpoint.
-
-😀
-STATUS: 200 {article: {
-author: str
-title: str
-article_id: num
-body: str
-topic: str
-created_at: num/str
-votes: num
-article_img_url: str
-
-}} ✅
-
-🙁
-STATUS: 404 "not found" - valid but non-existant article id ✅
-STATUS: 400 "bad request" - invalid article-id eg bananas - handle psql error
-
-
-make promise rejection handler function that takes a status and a item string (that is not found)
-*/
 describe("GET /api/articles/article-id", () => {
   test("STATUS: 200 returns requested article", () => {
     return request(app)
