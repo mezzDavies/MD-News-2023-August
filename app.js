@@ -4,6 +4,7 @@ const {
   handle500s,
   handle404s,
   handleCustomErrors,
+  handlePsqlErrors,
 } = require("./app-error-handlers");
 
 const { getTopics } = require("./controllers/topics.controllers");
@@ -16,6 +17,7 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.use("/*", handle404s);
 app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
 app.use(handle500s);
 
 module.exports = app;

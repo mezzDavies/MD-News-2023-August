@@ -92,12 +92,14 @@ created_at: num/str
 votes: num
 article_img_url: str
 
-}}
+}} ✅
 
 🙁
-STATUS: 404 "not found" - valid but non-existant article id
-STATUS: 400 "bad request" - invalid article-id eg bananas
+STATUS: 404 "not found" - valid but non-existant article id ✅
+STATUS: 400 "bad request" - invalid article-id eg bananas - handle psql error
 
+
+make promise rejection handler function that takes a status and a item string (that is not found)
 */
 describe("GET /api/articles/article-id", () => {
   test("STATUS: 200 returns requested article", () => {
@@ -125,6 +127,14 @@ describe("GET /api/articles/article-id", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("article not found");
+      });
+  });
+  test("STATUS: 400 returns error message for invalid  article-id", () => {
+    return request(app)
+      .get("/api/articles/not-an-id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });

@@ -9,9 +9,18 @@ module.exports.handle500s = (err, req, res, next) => {
 
 module.exports.handleCustomErrors = (err, req, res, next) => {
   if (err.status) {
-    console.log("error in handler >>>", err);
     const { msg, status } = err;
     res.status(status).send({ msg });
+  } else {
+    next(err);
+  }
+};
+
+module.exports.handlePsqlErrors = (err, req, res, next) => {
+  const { code } = err;
+  if (code === "22P02") {
+    const msg = "bad request";
+    res.status(400).send({ msg });
   } else {
     next(err);
   }
