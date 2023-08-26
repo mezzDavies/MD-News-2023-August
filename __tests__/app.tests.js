@@ -75,3 +75,66 @@ describe("GET /api", () => {
       });
   });
 });
+
+/* 
+
+/api/articles/article-id
+Remember to add a description of this endpoint to your /api endpoint.
+
+😀
+STATUS: 200 {article: {
+author: str
+title: str
+article_id: num
+body: str
+topic: str
+created_at: num/str
+votes: num
+article_img_url: str
+
+}} ✅
+
+🙁
+STATUS: 404 "not found" - valid but non-existant article id ✅
+STATUS: 400 "bad request" - invalid article-id eg bananas - handle psql error
+
+
+make promise rejection handler function that takes a status and a item string (that is not found)
+*/
+describe("GET /api/articles/article-id", () => {
+  test("STATUS: 200 returns requested article", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: 1,
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          })
+        );
+      });
+  });
+  test("STATUS: 404 returns error message for valid but non-existent article-id", () => {
+    return request(app)
+      .get("/api/articles/99999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("article not found");
+      });
+  });
+  test("STATUS: 400 returns error message for invalid  article-id", () => {
+    return request(app)
+      .get("/api/articles/not-an-id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});
