@@ -119,4 +119,12 @@ describe("GET /api/articles/article-id", () => {
         );
       });
   });
+  test("STATUS: 404 returns error message for valid but non-existent article-id", () => {
+    return request(app)
+      .get("/api/articles/99999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("article not found");
+      });
+  });
 });
