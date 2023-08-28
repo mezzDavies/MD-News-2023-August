@@ -9,11 +9,15 @@ const {
 
 const { getTopics } = require("./controllers/topics.controllers");
 const { getEndpointsJson } = require("./controllers/api.controllers");
-const { getArticleById } = require("./controllers/articles.controllers");
+const {
+  getArticleById,
+  getArticles,
+} = require("./controllers/articles.controllers");
 
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpointsJson);
 app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles/", getArticles);
 
 app.use("/*", handle404s);
 app.use(handleCustomErrors);
