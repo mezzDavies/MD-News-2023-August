@@ -66,7 +66,7 @@ describe("GET /api/topics ", () => {
   });
 });
 describe("GET /api", () => {
-  test("STATUS: 200 returns endpoints.json file", () => {
+  test("STATUS:200 returns endpoints.json file", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -77,7 +77,7 @@ describe("GET /api", () => {
 });
 
 describe("GET /api/articles/article-id", () => {
-  test("STATUS: 200 returns requested article", () => {
+  test("STATUS:200 returns requested article", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -96,7 +96,7 @@ describe("GET /api/articles/article-id", () => {
         );
       });
   });
-  test("STATUS: 404 returns error message for valid but non-existent article-id", () => {
+  test("STATUS:404 returns error message for valid but non-existent article-id", () => {
     return request(app)
       .get("/api/articles/99999")
       .expect(404)
@@ -104,12 +104,65 @@ describe("GET /api/articles/article-id", () => {
         expect(msg).toBe("article not found");
       });
   });
-  test("STATUS: 400 returns error message for invalid  article-id", () => {
+  test("STATUS:400 returns error message for invalid  article-id", () => {
     return request(app)
       .get("/api/articles/not-an-id")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("bad request");
+      });
+  });
+});
+describe("GET/api/articles", () => {
+  test("STATUS:200 returns array of all article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("STATUS:200 articles do not have body property", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+  test("STATUS:200 articles have comment_count property", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+  test("STATUS:200 articles are sorted by date - descending", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });
