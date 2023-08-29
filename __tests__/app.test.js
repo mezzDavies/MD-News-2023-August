@@ -109,11 +109,11 @@ describe("GET /api/articles/article-id", () => {
       .get("/api/articles/not-an-id")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("Bad request");
       });
   });
 });
-describe("GET/api/articles", () => {
+describe("GET /api/articles", () => {
   test("STATUS:200 returns array of all article objects", () => {
     return request(app)
       .get("/api/articles")
@@ -166,3 +166,62 @@ describe("GET/api/articles", () => {
       });
   });
 });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("STATUS:200 returns an array of comments for article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(11);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+              author: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  test("STATUS:200 array of comments is sorted by date - most recent first ", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("STATUS:200 returns an empty array for an article with no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+
+  test("STATUS:404 returns appropriate error message for a non-existent but valid article_id", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Resource not found");
+      });
+  });
+  test("STATUS:400 returns appropriate error message for an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/badness/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
+// ***** UPDATE ENDPOINTS.JSON *****
