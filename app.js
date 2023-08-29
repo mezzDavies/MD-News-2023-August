@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+
 const {
   handle500s,
   handle404s,
@@ -13,11 +14,13 @@ const {
   getArticleById,
   getArticles,
 } = require("./controllers/articles.controllers");
+const { getArticleComments } = require("./controllers/comments.controllers");
 
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpointsJson);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/", getArticles);
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.use("/*", handle404s);
 app.use(handleCustomErrors);

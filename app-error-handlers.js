@@ -19,7 +19,7 @@ module.exports.handleCustomErrors = (err, req, res, next) => {
 module.exports.handlePsqlErrors = (err, req, res, next) => {
   const { code } = err;
   if (code === "22P02") {
-    const msg = "bad request";
+    const msg = "Bad request";
     res.status(400).send({ msg });
   } else {
     next(err);
