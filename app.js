@@ -8,19 +8,26 @@ const {
   handlePsqlErrors,
 } = require("./app-error-handlers");
 
+app.use(express.json());
+
 const { getTopics } = require("./controllers/topics.controllers");
 const { getEndpointsJson } = require("./controllers/api.controllers");
 const {
   getArticleById,
   getArticles,
 } = require("./controllers/articles.controllers");
-const { getArticleComments } = require("./controllers/comments.controllers");
+const {
+  getArticleComments,
+  postComment,
+} = require("./controllers/comments.controllers");
 
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpointsJson);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
+
+app.post("/api/articles/:article_id/comments", postComment);
 
 app.use("/*", handle404s);
 app.use(handleCustomErrors);

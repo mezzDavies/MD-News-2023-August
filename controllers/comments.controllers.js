@@ -1,4 +1,7 @@
-const { fetchArticleComments } = require("../models/comments.models");
+const {
+  fetchArticleComments,
+  addComment,
+} = require("../models/comments.models");
 
 module.exports.getArticleComments = (req, res, next) => {
   const { article_id } = req.params;
@@ -8,8 +11,17 @@ module.exports.getArticleComments = (req, res, next) => {
       res.status(200).send({ comments });
     })
     .catch((err) => {
-      console.log("🔹 / file: comments.controllers.js:11 / err >>> ", err);
-
       next(err);
     });
+};
+
+module.exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+
+  addComment(req, article_id).then((comment) => {
+    res.status(201).send({ comment });
+  });
+  // .catch((err) => {
+  //   next(err);
+  // });
 };

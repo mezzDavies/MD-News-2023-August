@@ -224,4 +224,52 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("POST /api/articles/:article_id/comments", () => {
+  test("STATUS:201 returns successfully posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "one two one two testing",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            article_id: 1,
+            author: "butter_bridge",
+            body: "one two one two testing",
+            created_at: expect.any(String),
+            votes: 0,
+          })
+        );
+      });
+  });
+
+  test("STATUS:201 ignores unnneeded properties on request and still returns successfully posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "one two one two testing",
+      unneeded: "bad juju",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            article_id: 2,
+            author: "butter_bridge",
+            body: "one two one two testing",
+            created_at: expect.any(String),
+            votes: 0,
+          })
+        );
+      });
+  });
+});
 // ***** UPDATE ENDPOINTS.JSON *****

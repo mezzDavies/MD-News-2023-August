@@ -11,10 +11,20 @@ module.exports.fetchArticleComments = (article_id) => {
       return Promise.all([
         rows,
         checkExists("articles", "article_id", article_id),
-      ]).then((success) => {
-        return success[0];
+      ]).then((articleExists) => {
+        return articleExists[0];
       });
     }
     return rows;
+  });
+};
+
+module.exports.addComment = ({ body: { body, username } }, article_id) => {
+  const queryStr = `INSERT INTO comments (body, author, article_id) 
+                    VALUES ($1, $2, $3)
+                    RETURNING *;`;
+  const values = [body, username, article_id];
+  return db.query(queryStr, values).then(({ rows }) => {
+    return rows[0];
   });
 };
