@@ -47,6 +47,18 @@ describe("STATUS:404 returns appropriate message for invalid urls", () => {
       });
   });
 });
+
+describe("GET /api", () => {
+  test("STATUS:200 returns endpoints.json file", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(endpointsFile);
+      });
+  });
+});
+
 describe("GET /api/topics ", () => {
   test("STATUS:200 returns array of all topics", () => {
     return request(app)
@@ -62,16 +74,6 @@ describe("GET /api/topics ", () => {
             })
           );
         });
-      });
-  });
-});
-describe("GET /api", () => {
-  test("STATUS:200 returns endpoints.json file", () => {
-    return request(app)
-      .get("/api")
-      .expect(200)
-      .then(({ body: { endpoints } }) => {
-        expect(endpoints).toEqual(endpointsFile);
       });
   });
 });
@@ -104,7 +106,7 @@ describe("GET /api/articles/article-id", () => {
         expect(msg).toBe("article not found");
       });
   });
-  test("STATUS:400 returns error message for invalid  article-id", () => {
+  test("STATUS:400 returns error message for invalid article-id", () => {
     return request(app)
       .get("/api/articles/not-an-id")
       .expect(400)
@@ -269,6 +271,58 @@ describe("POST /api/articles/:article_id/comments", () => {
             votes: 0,
           })
         );
+      });
+  });
+
+  test("STATUS:400 returns error message if request has missing properties", () => {
+    const badComment = {};
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(badComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Missing properties");
+      });
+  });
+  test("STATUS:400 returns error message for invalid article_id ", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "one two one two testing",
+    };
+    return request(app)
+      .post("/api/articles/not-an-id/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+
+  test("STATUS:404 returns error message for valid but non-existent article_id ", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "one two one two testing",
+    };
+    return request(app)
+      .post("/api/articles/99999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Article not found");
+      });
+  });
+
+  test("STATUS:404 returns error message for invalid username", () => {
+    const newComment = {
+      username: "not_a_user",
+      body: "one two one two testing",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Username not found");
       });
   });
 });

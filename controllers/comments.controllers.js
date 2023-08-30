@@ -18,10 +18,11 @@ module.exports.getArticleComments = (req, res, next) => {
 module.exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
 
-  addComment(req, article_id).then((comment) => {
-    res.status(201).send({ comment });
-  });
-  // .catch((err) => {
-  //   next(err);
-  // });
+  addComment(req, article_id)
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
