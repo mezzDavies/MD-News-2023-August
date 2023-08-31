@@ -62,12 +62,12 @@
     "queries": [],
     "exampleRequest": {
       "username": "user123",
-      "body": "This is a test."
+      "body": "This is a comment."
     },
     "exampleResponse": {
       "comment": {
         "comment_id": 21,
-        "body": "This is a test.",
+        "body": "This is a comment.",
         "votes": 0,
         "author": "user123",
         "article_id": 9,
