@@ -326,4 +326,80 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("STATUS:200 returns updated article with POSITIVE votes", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchRequest)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            title: expect.any(String),
+            article_id: 1,
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 101,
+            article_img_url: expect.any(String),
+          })
+        );
+      });
+  });
+  test("STATUS:200 returns updated article with NEGATIVE votes", () => {
+    const patchRequest = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchRequest)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            title: expect.any(String),
+            article_id: 1,
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 99,
+            article_img_url: expect.any(String),
+          })
+        );
+      });
+  });
+
+  test("STATUS:404 returns error message for valid but nonexistent article_id", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/99999")
+      .send(patchRequest)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Article not found");
+      });
+  });
+  test("STATUS:400 returns error message for invalid article_id", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/more-badness")
+      .send(patchRequest)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("STATUS:400 returns error message for malformed request body", () => {
+    const patchRequest = { inc_votes: "one" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchRequest)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
 // ***** UPDATE ENDPOINTS.JSON *****

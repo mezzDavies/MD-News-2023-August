@@ -15,6 +15,7 @@ const { getEndpointsJson } = require("./controllers/api.controllers");
 const {
   getArticleById,
   getArticles,
+  patchArticle,
 } = require("./controllers/articles.controllers");
 const {
   getArticleComments,
@@ -28,6 +29,8 @@ app.get("/api/articles/", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.patch("/api/articles/:article_id", patchArticle);
 
 app.use("/*", handle404s);
 app.use(handleCustomErrors);

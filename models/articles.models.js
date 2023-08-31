@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../models/utils.models");
 
 module.exports.fetchArticleById = (article_id) => {
   const queryStr = `SELECT * FROM articles 
@@ -20,5 +21,24 @@ module.exports.fetchArticles = () => {
                     ORDER BY articles.created_at DESC;`;
   return db.query(queryStr).then(({ rows }) => {
     return rows;
+  });
+};
+
+module.exports.updateArticle = (article_id, votes) => {
+  const queryStr = `UPDATE articles 
+                    SET votes = votes + $1
+                    WHERE article_id = $2
+                    RETURNING *;`;
+
+  return db.query(queryStr, [votes, article_id]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.all([
+        rows,
+        checkExists("articles", "article_id", article_id, "Article"),
+      ]).then((articleExists) => {
+        return articleExists[0];
+      });
+    }
+    return rows[0];
   });
 };
