@@ -22,12 +22,14 @@ const {
   postComment,
   deleteComment,
 } = require("./controllers/comments.controllers");
+const { getUsers } = require("./controllers/users.controllers");
 
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpointsJson);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
+app.get("/api/users", getUsers);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
