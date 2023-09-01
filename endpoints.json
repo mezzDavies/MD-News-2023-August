@@ -92,5 +92,11 @@
         "comment_count": 6
       }
     }
+  },
+
+  "DELETE /api/comments/:comment-id": {
+    "description": "deletes given comment",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
