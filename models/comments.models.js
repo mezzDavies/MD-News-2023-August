@@ -28,3 +28,13 @@ module.exports.addComment = ({ body: { body, username } }, article_id) => {
     return rows[0];
   });
 };
+
+module.exports.removeComment = (comment_id) => {
+  const queryStr = `DELETE FROM comments
+                    WHERE comment_id = $1
+                    RETURNING *;`;
+  // delete .then?
+  return db.query(queryStr, [comment_id]).then(({ rows }) => {
+    console.log({ rows });
+  });
+};
