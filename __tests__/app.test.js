@@ -4,6 +4,7 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testdata = require("../db/data/test-data");
 const endpointsFile = require("../endpoints.json");
+const { checkExists } = require("../models/utils.models");
 
 beforeEach(() => {
   return seed(testdata);
@@ -298,7 +299,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 
-  test("STATUS:404 returns error message for valid but non-existent article_id ", () => {
+  test("STATUS:404 returns error message for valid but non-existent article_id", () => {
     const newComment = {
       username: "butter_bridge",
       body: "one two one two testing",
@@ -402,4 +403,39 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
-// ***** UPDATE ENDPOINTS.JSON *****
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("STATUS:204 comment is deleted and no content returned", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((res) => {
+        expect(res.body).toEqual({});
+      })
+      .then(() => {
+        return checkExists("comments", "comment_id", 1, "test comment");
+      })
+      .catch((err) => {
+        expect(err).toEqual({ status: 404, msg: "test comment not found" });
+      });
+  });
+
+  test("STATUS:404 returns error message for valid but non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/99999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Comment not found");
+      });
+  });
+
+  test("STATUS:400 returns error message for invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/yet-more-badness")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
+// ***** UPDATE ENDPOINTS.JSON ****
