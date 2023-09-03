@@ -4,6 +4,8 @@ const {
   updateArticle,
 } = require("../models/articles.models");
 
+const { fetchTopics } = require("../models/topics.models");
+
 module.exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   fetchArticleById(article_id)
@@ -16,7 +18,14 @@ module.exports.getArticleById = (req, res, next) => {
 };
 
 module.exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  const { topic, sort_by, order } = req.query;
+  fetchTopics()
+    .then((topics) => {
+      const validTopicQueries = topics.map((topic) => {
+        return topic.slug;
+      });
+      return fetchArticles(validTopicQueries, topic, sort_by, order);
+    })
     .then((articles) => {
       res.status(200).send({ articles });
     })
