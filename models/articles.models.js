@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+
 const { checkExists } = require("../models/utils.models");
 
 module.exports.fetchArticleById = (article_id) => {
@@ -13,12 +14,57 @@ module.exports.fetchArticleById = (article_id) => {
   });
 };
 
-module.exports.fetchArticles = () => {
-  const queryStr = `SELECT articles.author, articles.title,
+module.exports.fetchArticles = (
+  validTopics,
+  topic,
+  sortByColumn = "created_at",
+  order
+) => {
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({
+      msg: "Topic not found",
+      status: 404,
+    });
+  }
+
+  const validSortBys = [
+    "author",
+    "title",
+    "topic",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+
+  const validOrderBys = ["DESC", "ASC"];
+
+  if (
+    (order && !validOrderBys.includes(order.toUpperCase())) ||
+    !validSortBys.includes(sortByColumn)
+  ) {
+    return Promise.reject({
+      msg: "Bad request",
+      status: 400,
+    });
+  }
+
+  let queryStr = `SELECT articles.author, articles.title,
                     articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count
-                    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
-                    GROUP BY articles.article_id
-                    ORDER BY articles.created_at DESC;`;
+                    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+
+  if (topic) {
+    queryStr += `WHERE topic = '${topic}'`;
+  }
+
+  queryStr += `GROUP BY articles.article_id ORDER BY ${sortByColumn}`;
+
+  if (sortByColumn === "created_at" && !order) {
+    queryStr += ` DESC;`;
+  }
+  if (order) {
+    queryStr += ` ${order};`;
+  }
+
   return db.query(queryStr).then(({ rows }) => {
     return rows;
   });

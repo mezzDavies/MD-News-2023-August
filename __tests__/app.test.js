@@ -109,7 +109,7 @@ describe("GET /api/articles/article-id", () => {
   });
   test("STATUS:400 returns error message for invalid article-id", () => {
     return request(app)
-      .get("/api/articles/not-an-id")
+      .get("/api/articles/not_an_id")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad request");
@@ -160,13 +160,97 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("STATUS:200 articles are sorted by date - descending", () => {
+  test("STATUS:200 articles are sorted by date - in descending order as default", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
+  });
+  describe("QUERIES...", () => {
+    test("STATUS:200 accepts TOPICS queries - sorted by date in decending order as default", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: "mitch",
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+              })
+            );
+          });
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("STATUS:200 accepts SORT-BY queries in ascending order as default", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(13);
+          expect(articles).toBeSortedBy("author");
+        });
+    });
+
+    test("STATUS:200 accepts ORDER queries", () => {
+      return request(app)
+        .get("/api/articles?order=ASC")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(13);
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    test("STATUS:200 accepts FULL queries", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=created_at&order=ASC")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(12);
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    test("STATUS:200 returns empty array for valid topic query with no articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toEqual([]);
+        });
+    });
+    test("STATUS:404 returns error message for invalid TOPIC", () => {
+      return request(app)
+        .get("/api/articles?topic=badness")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Topic not found");
+        });
+    });
+    test("STATUS:400 returns error message for invalid SORT-BY", () => {
+      return request(app)
+        .get("/api/articles?sort_by=badJuju")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("STATUS:400 returns error message for invalid ORDER", () => {
+      return request(app)
+        .get("/api/articles?order=badJuju")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
   });
 });
 describe("GET /api/articles/:article_id/comments", () => {
@@ -385,7 +469,7 @@ describe("PATCH /api/articles/:article_id", () => {
   test("STATUS:400 returns error message for invalid article_id", () => {
     const patchRequest = { inc_votes: 1 };
     return request(app)
-      .patch("/api/articles/more-badness")
+      .patch("/api/articles/badness")
       .send(patchRequest)
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -440,7 +524,7 @@ describe("DELETE /api/comments/:comment_id", () => {
 });
 
 describe("GET /api/users", () => {
-  test("STATUS:200", () => {
+  test("STATUS:200 returns array of all users objects", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -458,4 +542,3 @@ describe("GET /api/users", () => {
       });
   });
 });
-// ***** UPDATE ENDPOINTS.JSON ****
