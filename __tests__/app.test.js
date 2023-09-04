@@ -99,6 +99,16 @@ describe("GET /api/articles/article-id", () => {
         );
       });
   });
+
+  test("STATUS:200 returned article has comment_count property", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("comment_count", 11);
+      });
+  });
+
   test("STATUS:404 returns error message for valid but non-existent article-id", () => {
     return request(app)
       .get("/api/articles/99999")
@@ -116,6 +126,7 @@ describe("GET /api/articles/article-id", () => {
       });
   });
 });
+
 describe("GET /api/articles", () => {
   test("STATUS:200 returns array of all article objects", () => {
     return request(app)
@@ -157,6 +168,7 @@ describe("GET /api/articles", () => {
         expect(articles.length).toBe(13);
         articles.forEach((article) => {
           expect(article).toHaveProperty("comment_count");
+          expect(typeof article.comment_count).toBe("number");
         });
       });
   });
@@ -253,6 +265,7 @@ describe("GET /api/articles", () => {
     });
   });
 });
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("STATUS:200 returns an array of comments for article", () => {
     return request(app)
@@ -311,6 +324,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("STATUS:201 returns successfully posted comment", () => {
     const newComment = {
