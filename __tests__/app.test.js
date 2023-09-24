@@ -349,7 +349,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 
-  test("STATUS:201 ignores unnneeded properties on request and still returns successfully posted comment", () => {
+  test("STATUS:201 ignores unneeded properties on request and still returns successfully posted comment", () => {
     const newComment = {
       username: "butter_bridge",
       body: "one two one two testing",

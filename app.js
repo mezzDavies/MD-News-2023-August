@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+const apiRouter = require("./routes/api-router");
+
 const {
   handle500s,
   handle404s,
@@ -9,33 +11,7 @@ const {
 } = require("./app-error-handlers");
 
 app.use(express.json());
-
-const { getTopics } = require("./controllers/topics.controllers");
-const { getEndpointsJson } = require("./controllers/api.controllers");
-const {
-  getArticleById,
-  getArticles,
-  patchArticle,
-} = require("./controllers/articles.controllers");
-const {
-  getArticleComments,
-  postComment,
-  deleteComment,
-} = require("./controllers/comments.controllers");
-const { getUsers } = require("./controllers/users.controllers");
-
-app.get("/api/topics", getTopics);
-app.get("/api", getEndpointsJson);
-app.get("/api/articles/:article_id", getArticleById);
-app.get("/api/articles/", getArticles);
-app.get("/api/articles/:article_id/comments", getArticleComments);
-app.get("/api/users", getUsers);
-
-app.post("/api/articles/:article_id/comments", postComment);
-
-app.patch("/api/articles/:article_id", patchArticle);
-
-app.delete("/api/comments/:comment_id", deleteComment);
+app.use("/api", apiRouter);
 
 app.use("/*", handle404s);
 app.use(handleCustomErrors);
