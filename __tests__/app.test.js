@@ -537,6 +537,59 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("STATUS:200 returns updated comment object with updated votes", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchRequest)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            body: expect.any(String),
+            votes: 17,
+            author: "butter_bridge",
+            article_id: 9,
+          })
+        );
+      });
+  });
+
+  test("STATUS:404 returns error message for valid but nonexistent comment_id", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/99999")
+      .send(patchRequest)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("comment not found");
+      });
+  });
+
+  test("STATUS:400 returns error message for invalid comment_id", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/badness")
+      .send(patchRequest)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+
+  test("STATUS:400 returns error message for malformed request body", () => {
+    const patchRequest = { inc_votes: "one" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchRequest)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("GET /api/users", () => {
   test("STATUS:200 returns array of all users objects", () => {
     return request(app)
