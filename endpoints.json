@@ -120,6 +120,22 @@
     }
   },
 
+  "PATCH /api/comments/:comment-id": {
+    "description": "updates votes property (positively or negatively) on given comment",
+    "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 21,
+        "body": "This is a comment.",
+        "votes": 1,
+        "author": "user123",
+        "article_id": 9,
+        "created_at": "2023-08-30T11:55:52.711Z"
+      }
+    }
+  },
+
   "DELETE /api/comments/:comment-id": {
     "description": "deletes given comment",
     "queries": [],
