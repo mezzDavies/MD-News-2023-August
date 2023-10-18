@@ -33,6 +33,5 @@ module.exports.removeComment = (comment_id) => {
   const queryStr = `DELETE FROM comments
                     WHERE comment_id = $1
                     RETURNING *;`;
-  // delete .then?
   return db.query(queryStr, [comment_id]).then(({ rows }) => {});
 };
