@@ -35,3 +35,13 @@ module.exports.removeComment = (comment_id) => {
                     RETURNING *;`;
   return db.query(queryStr, [comment_id]).then(({ rows }) => {});
 };
+
+module.exports.updateComment = (comment_id, votes) => {
+  const queryStr = `UPDATE comments 
+                    SET votes = votes + $1
+                    WHERE comment_id = $2
+                    RETURNING *;`;
+  return db.query(queryStr, [votes, comment_id]).then(({ rows }) => {
+    return rows[0];
+  });
+};

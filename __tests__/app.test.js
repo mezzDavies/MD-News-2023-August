@@ -536,6 +536,26 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+// ********************************************************
+describe("PATCH /api/comments/:comment_id", () => {
+  test("STATUS:200 returns updated comment object with POSITIVE votes", () => {
+    const patchRequest = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchRequest)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            body: expect.any(String),
+            votes: 17,
+            author: "butter_bridge",
+            article_id: 9,
+          })
+        );
+      });
+  });
+});
 
 describe("GET /api/users", () => {
   test("STATUS:200 returns array of all users objects", () => {
