@@ -42,6 +42,10 @@ module.exports.updateComment = (comment_id, votes) => {
                     WHERE comment_id = $2
                     RETURNING *;`;
   return db.query(queryStr, [votes, comment_id]).then(({ rows }) => {
+    if (!rows.length) {
+      return checkExists("comments", "comment_id", comment_id, "comment");
+    }
+
     return rows[0];
   });
 };

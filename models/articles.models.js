@@ -90,6 +90,7 @@ module.exports.updateArticle = (article_id, votes) => {
         return articleExists[0];
       });
     }
+
     return rows[0];
   });
 };
