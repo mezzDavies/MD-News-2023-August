@@ -2,6 +2,7 @@ const {
   fetchArticleById,
   fetchArticles,
   updateArticle,
+  addArticle,
 } = require("../models/articles.models");
 
 const { fetchTopics } = require("../models/topics.models");
@@ -45,4 +46,15 @@ module.exports.patchArticle = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+module.exports.postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+  addArticle(author, title, body, topic, article_img_url).then((article) => {
+    // console.log(
+    //   "🔹 / file: articles.controllers.js:54 / article controller >>> ",
+    //   article
+    // );
+    res.status(201).send({ article });
+  });
 };

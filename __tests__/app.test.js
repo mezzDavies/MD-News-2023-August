@@ -341,6 +341,68 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe.only("POST /api/articles", () => {
+  test("STATUS:201 returns successfully posted article", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "cats",
+      article_img_url: "www.pictures.com/interesting_pic.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        console.log("🔹 / file: app.test.js:342 / article >>> ", article);
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            title: "interesting stuff",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "Lorem ipsum interesting article words",
+            created_at: expect.any(String),
+            votes: 0,
+            article_img_url: "www.pictures.com/interesting_pic.jpg",
+            comment_count: 0,
+          })
+        );
+      });
+  });
+
+  test("STATUS:201 article has default image url if not provided on request", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "cats",
+      // article_img_url: "www.pictures.com/interesting_pic.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            title: "interesting stuff",
+            topic: "cats",
+            author: "butter_bridge",
+            body: "Lorem ipsum interesting article words",
+            created_at: expect.any(String),
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+            comment_count: 0,
+          })
+        );
+      });
+  });
+});
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("STATUS:201 returns successfully posted comment", () => {
     const newComment = {
