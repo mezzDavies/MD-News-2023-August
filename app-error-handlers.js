@@ -32,6 +32,9 @@ module.exports.handlePsqlErrors = (err, req, res, next) => {
     if (detail.includes("article_id")) {
       msg = "Article not found";
     }
+    if (detail.includes("topic")) {
+      msg = "Topic not found";
+    }
 
     res.status(404).send({ msg });
   } else {

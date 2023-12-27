@@ -50,11 +50,11 @@ module.exports.patchArticle = (req, res, next) => {
 
 module.exports.postArticle = (req, res, next) => {
   const { author, title, body, topic, article_img_url } = req.body;
-  addArticle(author, title, body, topic, article_img_url).then((article) => {
-    // console.log(
-    //   "🔹 / file: articles.controllers.js:54 / article controller >>> ",
-    //   article
-    // );
-    res.status(201).send({ article });
-  });
+  addArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      res.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

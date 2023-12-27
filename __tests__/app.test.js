@@ -341,7 +341,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   test("STATUS:201 returns successfully posted article", () => {
     const newArticle = {
       author: "butter_bridge",
@@ -355,7 +355,6 @@ describe.only("POST /api/articles", () => {
       .send(newArticle)
       .expect(201)
       .then(({ body: { article } }) => {
-        console.log("🔹 / file: app.test.js:342 / article >>> ", article);
         expect(article).toEqual(
           expect.objectContaining({
             article_id: expect.any(Number),
@@ -378,7 +377,6 @@ describe.only("POST /api/articles", () => {
       title: "interesting stuff",
       body: "Lorem ipsum interesting article words",
       topic: "cats",
-      // article_img_url: "www.pictures.com/interesting_pic.jpg",
     };
     return request(app)
       .post("/api/articles")
@@ -399,6 +397,56 @@ describe.only("POST /api/articles", () => {
             comment_count: 0,
           })
         );
+      });
+  });
+
+  test("STATUS: 404 returns error message if topic does not exist", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "I do not exist",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Topic not found");
+      });
+  });
+
+  test("STATUS: 404 returns error message if username does not exist", () => {
+    const newArticle = {
+      author: "not_a_user",
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "cats",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Username not found");
+      });
+  });
+
+  test("STATUS: 400 returns error message if requesst body is missing properties", () => {
+    const newArticle = {
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "cats",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Missing properties");
       });
   });
 });
