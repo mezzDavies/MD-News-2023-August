@@ -180,6 +180,22 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("STATUS:200 articles have abridged_body property", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("abridged_body");
+          const words = article.abridged_body.split(" ");
+
+          expect(words.length).toBeLessThanOrEqual(10);
+          expect(article.abridged_body.endsWith("...")).toBe(true);
+        });
+      });
+  });
+
   describe("QUERIES...", () => {
     test("STATUS:200 accepts TOPICS queries - sorted by date in decending order as default", () => {
       return request(app)
