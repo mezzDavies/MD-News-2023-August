@@ -341,7 +341,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   test("STATUS:201 returns successfully posted article", () => {
     const newArticle = {
       author: "butter_bridge",
@@ -355,7 +355,6 @@ describe.only("POST /api/articles", () => {
       .send(newArticle)
       .expect(201)
       .then(({ body: { article } }) => {
-        console.log("🔹 / file: app.test.js:342 / article >>> ", article);
         expect(article).toEqual(
           expect.objectContaining({
             article_id: expect.any(Number),
@@ -378,7 +377,6 @@ describe.only("POST /api/articles", () => {
       title: "interesting stuff",
       body: "Lorem ipsum interesting article words",
       topic: "cats",
-      // article_img_url: "www.pictures.com/interesting_pic.jpg",
     };
     return request(app)
       .post("/api/articles")
