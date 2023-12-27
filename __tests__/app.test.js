@@ -399,6 +399,56 @@ describe("POST /api/articles", () => {
         );
       });
   });
+
+  test("STATUS: 404 returns error message if topic does not exist", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "I do not exist",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Topic not found");
+      });
+  });
+
+  test("STATUS: 404 returns error message if username does not exist", () => {
+    const newArticle = {
+      author: "not_a_user",
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "cats",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Username not found");
+      });
+  });
+
+  test("STATUS: 400 returns error message if requesst body is missing properties", () => {
+    const newArticle = {
+      title: "interesting stuff",
+      body: "Lorem ipsum interesting article words",
+      topic: "cats",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Missing properties");
+      });
+  });
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
