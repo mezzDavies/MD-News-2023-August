@@ -55,7 +55,6 @@ module.exports.postArticle = (req, res, next) => {
       res.status(201).send({ article });
     })
     .catch((err) => {
-      console.log("🔹 / file: articles.controllers.js:58 / err >>> ", err);
       next(err);
     });
 };
